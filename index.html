@@ -94,19 +94,16 @@
 
 <div id="msgList"></div>
 
-<!-- Firebase 配置（已用你的真实地址填好） -->
+<!-- 只引入 Realtime Database 必需的 SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js"></script>
 <script>
+  // 你的 Firebase 配置（已去掉无关字段）
   const firebaseConfig = {
-    apiKey: "AIzaSyDGL47dfDwj4ZfmECU9D...", // 你的原配置，无需修改
+    apiKey: "AIzaSyDGL47dfDwj4ZfmECU9D...",
     authDomain: "liaot-b9275.firebaseapp.com",
-    databaseURL: "https://liaot-b9275-default-rtdb.asia-southeast1.firebasedatabase.app/", // 你的真实地址
-    projectId: "liaot-b9275",
-    storageBucket: "liaot-b9275.appspot.com",
-    messagingSenderId: "660228090843",
-    appId: "1:660228090843:web:ffa2a24...", // 你的原配置，无需修改
-    measurementId: "G-0QR0JV4L0M"
+    databaseURL: "https://liaot-b9275-default-rtdb.asia-southeast1.firebasedatabase.app/",
+    projectId: "liaot-b9275"
   };
 
   firebase.initializeApp(firebaseConfig);
@@ -114,7 +111,7 @@
   const msgRef = db.ref("messages");
 
   let isAdmin = false;
-  const ADMIN_PWD = "jiuyou531"; // 你可以改成自己的管理员密码
+  const ADMIN_PWD = "jiuyou531"; // 改成你自己的管理员密码
 
   function loginAdmin() {
     const pwd = document.getElementById("adminPwd").value;
