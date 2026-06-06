@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>旧友的留言处</title>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            background: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .container {
+            width: 90%;
+            max-width: 800px;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        #chatBox {
+            height: 400px;
+            border: 1px solid #ccc;
+            padding: 15px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            background: #fafafa;
+            border-radius: 4px;
+        }
+        .msg {
+            margin: 10px 0;
+            line-height: 1.5;
+        }
+        .msg .name {
+            font-weight: bold;
+            color: #5096ff;
+        }
+        .input-area {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        #nick {
+            width: 200px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        #msg {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        #send {
+            padding: 10px 20px;
+            border: none;
+            background: #5096ff;
+            color: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>旧友的留言处</h1>
+        <div id="chatBox"></div>
+        <div class="input-area">
+            <input type="text" id="nick" placeholder="输入你的昵称（只能设置一次）">
+            <input type="text" id="msg" placeholder="写下你的留言...">
+            <button id="send">发送留言</button>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDGL47dfDwj4ZfmECU9DcO3J0zY",
+            authDomain: "liaot-b9275.firebaseapp.com",
+            databaseURL: "https://liaot-b9275-default-rtdb.asia-southeast1.firebasedatabase.app/",
+            projectId: "liaot-b9275",
+            storageBucket: "liaot-b9275.appspot.com",
+            messagingSenderId: "660228090843",
+            appId: "1:660228090843:web:ffa2a2452a8ca3314ad5fe"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database().ref("chat");
+
+        const chatBox = document.getElementById("chatBox");
+        const nickInput = document.getElementById("nick");
+        const msgInput = document.getElementById("msg");
+        const sendBtn = document.getElementById("send");
+
+        const savedName = localStorage.getItem("fixedNick");
+        if (savedName) {
+            nickInput.value = savedName;
+            nickInput.disabled = true;
+            nickInput.style.background = "#eee";
+        }
+
+        db.on("child_added", snapshot => {
+            const msg = snapshot.val();
+            const div = document.createElement("div");
+            div.className = "msg";
+            div.innerHTML = `<span class="name">${msg.name}:</span> ${msg.text}`;
+            chatBox.appendChild(div);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        });
+
+        sendBtn.addEventListener("click", () => {
+            const name = nickInput.value.trim();
+            const text = msgInput.value.trim();
+            if (!name) return alert("请先输入昵称！");
+            if (!text) return alert("留言内容不能为空！");
+
+            if (!localStorage.getItem("fixedNick")) {
+                localStorage.setItem("fixedNick", name);
+                nickInput.disabled = true;
+                nickInput.style.background = "#eee";
+            }
+
+            db.push({ name, text, time: Date.now() });
+            msgInput.value = "";
+        });
+
+        msgInput.addEventListener("keydown", e => {
+            if (e.key === "Enter") sendBtn.click();
+        });
+    </script>
+</body>
+</html>
